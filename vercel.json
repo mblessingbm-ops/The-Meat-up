@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/zimra/fiscal-day/auto-close",
+      "schedule": "45 21 * * *"
+    },
+    {
+      "path": "/api/zimra/ping",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}

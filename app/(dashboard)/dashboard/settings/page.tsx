@@ -10,9 +10,12 @@ import Image from 'next/image'
 import { Settings, Save, Upload, ToggleLeft, ToggleRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useSettings } from '@/context/SettingsContext'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { useTheme } from '@/components/ThemeProvider'
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useSettings()
+  const { theme } = useTheme()
   const [form, setForm] = useState({ ...settings })
   const [saving, setSaving] = useState(false)
 
@@ -195,6 +198,24 @@ export default function SettingsPage() {
               </p>
             </div>
             <input type="file" accept="image/*" style={{ display: 'none' }} />
+          </div>
+        </div>
+
+        {/* Appearance */}
+        <div className="card" style={{ padding: '1.5rem' }}>
+          <h2 style={{ fontFamily: 'var(--font-primary)', fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '1.25rem', letterSpacing: '-0.01em' }}>
+            Appearance
+          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <p style={{ fontFamily: 'var(--font-primary)', fontWeight: 600, fontSize: '0.9375rem', color: 'var(--text-primary)' }}>
+                Theme
+              </p>
+              <p style={{ fontFamily: 'var(--font-primary)', fontSize: '0.8125rem', color: 'var(--text-tertiary)', marginTop: '0.25rem' }}>
+                {theme === 'dark' ? 'Dark mode is active' : 'Light mode is active'}
+              </p>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
 

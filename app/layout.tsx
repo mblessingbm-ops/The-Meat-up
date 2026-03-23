@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import { ThemeProvider } from '@/components/ThemeProvider'
 import './globals.css'
 
 const cormorant = Cormorant_Garamond({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
+      data-theme="dark"
       className={`${cormorant.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
@@ -49,7 +51,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         `}} />
       </head>
       <body>
-        {children}
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{

@@ -7,8 +7,8 @@ import { Menu, Search, Bell, X, CheckCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatRelative } from '@/lib/utils'
 import { MOTION } from '@/lib/animations'
-// No ThemeToggle — The Meat Up is dark-only
 import { Tooltip } from '@/components/ui/Tooltip'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 const BREADCRUMB_MAP: Record<string, string> = {
   '/dashboard':             'Dashboard',
@@ -104,6 +104,9 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
       </div>
 
       <div style={{ flex: 1 }} />
+
+      {/* Theme toggle */}
+      <ThemeToggle />
 
       {/* Search */}
       <button

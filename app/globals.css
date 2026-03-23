@@ -68,6 +68,68 @@
   --font-mono:       'JetBrains Mono', 'Fira Code', monospace;
 }
 
+/* ─── Light Mode Overrides ───────────────────────────────────────────────── */
+/* Activated when <html data-theme="light"> is set by ThemeProvider           */
+/* Sidebar stays dark in both modes to preserve The Meat Up brand identity    */
+[data-theme="light"] {
+  --bg-base:         #F5F0EB;
+  --bg-surface:      #FFFFFF;
+  --bg-subtle:       #F0EBE3;
+  --bg-overlay:      #E8E0D8;
+
+  --text-primary:    #1A1A1A;
+  --text-secondary:  #3A3A3A;
+  --text-tertiary:   #6B6B6B;
+  --text-inverse:    #F5F0EB;
+
+  --border-default:  #E0D8D0;
+  --border-strong:   #C8BFB6;
+  --border-subtle:   #EAE5DF;
+
+  /* Accent stays the same — brand red works on both backgrounds */
+  --accent:          #8B1A1A;
+  --accent-hover:    #6D1414;
+  --accent-subtle:   #F5E5E5;
+  --accent-border:   #C87070;
+
+  --gold:            #B8860B;
+  --gold-subtle:     #FAF3E0;
+  --gold-border:     #D4A017;
+
+  --success:         #1A7A4A;
+  --success-subtle:  #E8F5EE;
+  --success-border:  #5AAA80;
+
+  --warning:         #B8860B;
+  --warning-subtle:  #FAF3E0;
+  --warning-border:  #D4A017;
+
+  --danger:          #C0142A;
+  --danger-subtle:   #FDE8EB;
+  --danger-border:   #E05070;
+
+  --info:            #1D6FAF;
+  --info-subtle:     #E8F0FA;
+  --info-border:     #5A90CC;
+
+  --shadow-xs:       0 1px 2px rgba(0,0,0,0.08);
+  --shadow-sm:       0 1px 4px rgba(0,0,0,0.10);
+  --shadow-md:       0 4px 12px rgba(0,0,0,0.12);
+  --shadow-lg:       0 12px 32px rgba(0,0,0,0.14);
+}
+
+/* ─── Smooth theme transition ────────────────────────────────────────────── */
+/* Only applied if the user hasn't requested reduced motion                   */
+@media (prefers-reduced-motion: no-preference) {
+  *, *::before, *::after {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.15s ease,
+      box-shadow 0.2s ease;
+  }
+}
+
 /* ─── Base resets ──────────────────────────────────────────────────────────── */
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }

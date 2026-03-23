@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'

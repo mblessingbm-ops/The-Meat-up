@@ -1,22 +1,36 @@
 import { createClient } from '@supabase/supabase-js'
 import { createBrowserClient } from '@supabase/ssr'
-// AUDIT FIX (March 2026): Added singleton `supabase` export used by useRealtime.ts and
-// other client components that use `import { supabase } from '@/lib/supabase'`.
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-// Browser client (for client components)
+// Browser client factory (for client components)
 export function createSupabaseBrowserClient() {
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }
 
-// Singleton browser client — used by hooks (e.g. useRealtime) that need a stable reference
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+// Lazy singleton — only created on first access at runtime (never at build time)
+// Call sites (Sidebar.tsx, useRealtime.ts) import this and use it directly — no changes needed there.
+let _supabase: ReturnType<typeof createBrowserClient> | null = null
+export const supabase = new Proxy({} as ReturnType<typeof createBrowserClient>, {
+  get(_target, prop) {
+    if (!_supabase) {
+      _supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
+    }
+    const value = (_supabase as unknown as Record<string | symbol, unknown>)[prop]
+    return typeof value === 'function' ? value.bind(_supabase) : value
+  },
+})
 
 // Admin client (server-side only — never expose to browser)
 export function createSupabaseAdminClient() {
-  return createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  })
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
 }
+

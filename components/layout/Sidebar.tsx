@@ -242,19 +242,13 @@ export default function Sidebar({ user, mobileOpen = false, onMobileClose }: Sid
   const [loggingOut, setLoggingOut] = useState(false)
   const unreadCount = MOCK_NOTIFICATIONS.filter(n => !n.read).length
 
-  async function handleLogout() {
-    setLoggingOut(true)
-    try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
-      await supabase.auth.signOut({ scope: 'local' })
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      window.location.href = '/auth/login'
-    }
+  const handleLogout = async () => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    await supabase.auth.signOut({ scope: 'local' })
+    window.location.href = '/auth/login'
   }
 
   const sidebarContent = (

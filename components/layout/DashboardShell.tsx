@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Sidebar from '@/components/layout/Sidebar'
 import TopBar from '@/components/layout/TopBar'
 import { SettingsProvider } from '@/context/SettingsContext'
+import AuthGuard from '@/components/AuthGuard'
 import type { User } from '@/types'
 
 // The Meat Up — single operator
@@ -21,20 +22,22 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <SettingsProvider>
-      <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-base)' }}>
-        <Sidebar
-          user={ADMIN_USER}
-          mobileOpen={mobileOpen}
-          onMobileClose={() => setMobileOpen(false)}
-        />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <TopBar onMenuClick={() => setMobileOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-5 lg:p-6">
-            {children}
-          </main>
+    <AuthGuard>
+      <SettingsProvider>
+        <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-base)' }}>
+          <Sidebar
+            user={ADMIN_USER}
+            mobileOpen={mobileOpen}
+            onMobileClose={() => setMobileOpen(false)}
+          />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <TopBar onMenuClick={() => setMobileOpen(true)} />
+            <main className="flex-1 overflow-y-auto p-5 lg:p-6">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
-    </SettingsProvider>
+      </SettingsProvider>
+    </AuthGuard>
   )
 }

@@ -17,7 +17,7 @@ import {
 import { cn } from '@/lib/utils'
 import { MOTION, ANIMATION_PRESETS } from '@/lib/animations'
 import { Tooltip } from '@/components/ui/Tooltip'
-import { supabase } from '@/lib/supabase'
+import { createBrowserClient } from '@supabase/ssr'
 import type { User } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -245,14 +245,16 @@ export default function Sidebar({ user, mobileOpen = false, onMobileClose }: Sid
   async function handleLogout() {
     setLoggingOut(true)
     try {
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      )
       await supabase.auth.signOut()
-      // Dev mode: clear the dev session cookie manually
-      document.cookie = 'meatup-dev-session=; path=/; max-age=0'
-      document.cookie = 'kingsport-dev-session=; path=/; max-age=0'
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
       router.push('/auth/login')
+      router.refresh()
     }
   }
 

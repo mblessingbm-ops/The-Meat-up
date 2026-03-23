@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
-import toast from 'react-hot-toast'
 import { cn } from '@/lib/utils'
+import { createSupabaseBrowserClient } from '@/lib/supabase'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -14,31 +14,39 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    setErrorMsg(null)
+
     if (!email || !password) {
-      toast.error('Please enter your email and password.')
+      setErrorMsg('Please enter your email and password.')
       return
     }
+
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const supabase = createSupabaseBrowserClient()
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Login failed')
-      toast.success(`Welcome back, ${data.user?.name?.split(' ')[0]}!`)
-      router.push('/dashboard')
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Login failed'
-      toast.error(message)
+
+      if (error) {
+        console.error('Login error:', error.message)
+        setErrorMsg(error.message)
+        return
+      }
+
+      if (data.session) {
+        router.push('/dashboard')
+      }
     } finally {
       setLoading(false)
     }
   }
+
 
   return (
     <div className="min-h-screen bg-[#0D1117] flex">
@@ -177,6 +185,14 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            {/* Error banner — shows exact Supabase error message */}
+            {errorMsg && (
+              <div className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+                <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <p className="text-sm text-red-400 leading-snug">{errorMsg}</p>
+              </div>
+            )}
 
             {/* Submit */}
             <button

@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
 
     // ── Dev bypass (when Supabase isn't configured) ─────────────────────────
     const isDevMode =
-      !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-      process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')
+      !process.env.SUPABASE_URL ||
+      process.env.SUPABASE_URL.includes('placeholder')
 
     if (isDevMode) {
       const match = DEV_USERS.find(
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
     // ── Production: Supabase auth ────────────────────────────────────────────
     const { createClient } = await import('@supabase/supabase-js')
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 

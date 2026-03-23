@@ -1,40 +1,45 @@
-'use client'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import DashboardShell from '@/components/layout/DashboardShell'
 
-import { useState } from 'react'
-import Sidebar from '@/components/layout/Sidebar'
-import TopBar from '@/components/layout/TopBar'
-import { SettingsProvider } from '@/context/SettingsContext'
-import type { User } from '@/types'
+export const dynamic = 'force-dynamic'
 
-// The Meat Up — single operator
-const ADMIN_USER: User = {
-  id: 'usr_admin_001',
-  name: 'Admin',
-  email: 'admin@themeatup.co.zw',
-  role: 'admin',
-  department: 'Management',
-  is_active: true,
-  created_at: '2026-01-01T00:00:00Z',
-}
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const cookieStore = await cookies()
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [mobileOpen, setMobileOpen] = useState(false)
-
-  return (
-    <SettingsProvider>
-      <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-base)' }}>
-        <Sidebar
-          user={ADMIN_USER}
-          mobileOpen={mobileOpen}
-          onMobileClose={() => setMobileOpen(false)}
-        />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <TopBar onMenuClick={() => setMobileOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-5 lg:p-6">
-            {children}
-          </main>
-        </div>
-      </div>
-    </SettingsProvider>
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // Server component — cookie mutations handled by middleware response
+          }
+        },
+      },
+    }
   )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect('/auth/login')
+  }
+
+  return <DashboardShell>{children}</DashboardShell>
 }

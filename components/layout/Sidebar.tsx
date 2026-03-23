@@ -249,12 +249,11 @@ export default function Sidebar({ user, mobileOpen = false, onMobileClose }: Sid
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       )
-      await supabase.auth.signOut()
+      await supabase.auth.signOut({ scope: 'local' })
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
-      router.push('/auth/login')
-      router.refresh()
+      window.location.href = '/auth/login'
     }
   }
 
